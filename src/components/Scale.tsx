@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Coin from './Coin';
+import { Button } from '@/components/ui/button';
+import { ShieldCheck } from 'lucide-react';
 
 interface ScaleProps {
   leftPanCoins: number[];
@@ -75,6 +77,16 @@ const Scale: React.FC<ScaleProps> = ({
     onAddCoin(side, coinId);
   };
   
+  // New function to mark all coins on a pan as real
+  const markAllCoinsAsReal = (side: 'left' | 'right') => {
+    const coins = side === 'left' ? leftPanCoins : rightPanCoins;
+    coins.forEach(coinId => {
+      if (!labeledRealCoins.includes(coinId) && labeledFakeCoin !== coinId) {
+        onLabelCoin(coinId, 'real');
+      }
+    });
+  };
+  
   return (
     <div className="relative flex flex-col items-center justify-center p-8 w-full max-w-3xl mx-auto">
       <motion.div 
@@ -103,64 +115,92 @@ const Scale: React.FC<ScaleProps> = ({
         
         <div className="flex justify-between w-96">
           {/* Left Pan */}
-          <motion.div
-            className={cn(
-              "scale-pan", 
-              leftPanCoins.length > 0 && "bg-gray-300"
+          <div className="flex flex-col items-center gap-2">
+            <motion.div
+              className={cn(
+                "scale-pan", 
+                leftPanCoins.length > 0 && "bg-gray-300"
+              )}
+              animate={{
+                y: scaleState === 'left-heavy' ? 20 : scaleState === 'right-heavy' ? -10 : 0
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop('left', e)}
+            >
+              <div className="flex flex-wrap gap-1 p-2 justify-center">
+                {leftPanCoins.map(coinId => (
+                  <Coin
+                    key={`left-${coinId}`}
+                    id={coinId}
+                    isFake={coinId === fakeCoinId}
+                    isLabeledFake={labeledFakeCoin === coinId}
+                    isLabeledReal={labeledRealCoins.includes(coinId)}
+                    onDragStart={() => {}}
+                    onLabelCoin={onLabelCoin}
+                    onAddToScale={handleAddToScale}
+                    disabled={disabled}
+                  />
+                ))}
+              </div>
+            </motion.div>
+            {leftPanCoins.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs"
+                onClick={() => markAllCoinsAsReal('left')}
+                disabled={disabled}
+              >
+                <ShieldCheck className="h-3 w-3 mr-1" />
+                Mark All as Real
+              </Button>
             )}
-            animate={{
-              y: scaleState === 'left-heavy' ? 20 : scaleState === 'right-heavy' ? -10 : 0
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop('left', e)}
-          >
-            <div className="flex flex-wrap gap-1 p-2 justify-center">
-              {leftPanCoins.map(coinId => (
-                <Coin
-                  key={`left-${coinId}`}
-                  id={coinId}
-                  isFake={coinId === fakeCoinId}
-                  isLabeledFake={labeledFakeCoin === coinId}
-                  isLabeledReal={labeledRealCoins.includes(coinId)}
-                  onDragStart={() => {}}
-                  onLabelCoin={onLabelCoin}
-                  onAddToScale={handleAddToScale}
-                  disabled={disabled}
-                />
-              ))}
-            </div>
-          </motion.div>
+          </div>
           
           {/* Right Pan */}
-          <motion.div
-            className={cn(
-              "scale-pan", 
-              rightPanCoins.length > 0 && "bg-gray-300"
+          <div className="flex flex-col items-center gap-2">
+            <motion.div
+              className={cn(
+                "scale-pan", 
+                rightPanCoins.length > 0 && "bg-gray-300"
+              )}
+              animate={{
+                y: scaleState === 'right-heavy' ? 20 : scaleState === 'left-heavy' ? -10 : 0
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop('right', e)}
+            >
+              <div className="flex flex-wrap gap-1 p-2 justify-center">
+                {rightPanCoins.map(coinId => (
+                  <Coin
+                    key={`right-${coinId}`}
+                    id={coinId}
+                    isFake={coinId === fakeCoinId}
+                    isLabeledFake={labeledFakeCoin === coinId}
+                    isLabeledReal={labeledRealCoins.includes(coinId)}
+                    onDragStart={() => {}}
+                    onLabelCoin={onLabelCoin}
+                    onAddToScale={handleAddToScale}
+                    disabled={disabled}
+                  />
+                ))}
+              </div>
+            </motion.div>
+            {rightPanCoins.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs"
+                onClick={() => markAllCoinsAsReal('right')}
+                disabled={disabled}
+              >
+                <ShieldCheck className="h-3 w-3 mr-1" />
+                Mark All as Real
+              </Button>
             )}
-            animate={{
-              y: scaleState === 'right-heavy' ? 20 : scaleState === 'left-heavy' ? -10 : 0
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop('right', e)}
-          >
-            <div className="flex flex-wrap gap-1 p-2 justify-center">
-              {rightPanCoins.map(coinId => (
-                <Coin
-                  key={`right-${coinId}`}
-                  id={coinId}
-                  isFake={coinId === fakeCoinId}
-                  isLabeledFake={labeledFakeCoin === coinId}
-                  isLabeledReal={labeledRealCoins.includes(coinId)}
-                  onDragStart={() => {}}
-                  onLabelCoin={onLabelCoin}
-                  onAddToScale={handleAddToScale}
-                  disabled={disabled}
-                />
-              ))}
-            </div>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
       

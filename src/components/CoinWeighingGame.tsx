@@ -173,7 +173,7 @@ const CoinWeighingGame: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            Find the Fake Coin
+            Find the coin that is lighter than the rest
           </motion.h1>
           
           <motion.div 
