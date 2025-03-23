@@ -38,11 +38,27 @@ const CoinWeighingGame: React.FC = () => {
     console.log(`New game: Fake coin is ${randomFakeCoin}`);
   };
   
+  // This is kept for compatibility with the Scale component
   const handleDragStart = (id: number) => {
+    // Do nothing for now as we're not using drag and drop
+  };
+  
+  const handleAddToScale = (coinId: number, side: 'left' | 'right') => {
+    if (hasWeighed) {
+      setHasWeighed(false);
+    }
+    
     // Remove the coin from its current location
-    setCoins(coins.filter(coinId => coinId !== id));
-    setLeftPanCoins(leftPanCoins.filter(coinId => coinId !== id));
-    setRightPanCoins(rightPanCoins.filter(coinId => coinId !== id));
+    setCoins(coins.filter(id => id !== coinId));
+    setLeftPanCoins(leftPanCoins.filter(id => id !== coinId));
+    setRightPanCoins(rightPanCoins.filter(id => id !== coinId));
+    
+    // Add the coin to the specified pan
+    if (side === 'left') {
+      setLeftPanCoins(prev => [...prev, coinId]);
+    } else {
+      setRightPanCoins(prev => [...prev, coinId]);
+    }
   };
   
   const handleAddCoin = (side: 'left' | 'right', coinId: number) => {
@@ -206,6 +222,7 @@ const CoinWeighingGame: React.FC = () => {
               isLabeledFake={labeledFakeCoin === id}
               onDragStart={handleDragStart}
               onLabelCoin={handleLabelCoin}
+              onAddToScale={handleAddToScale}
               disabled={gameComplete}
             />
           ))}
