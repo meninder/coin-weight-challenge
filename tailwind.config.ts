@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				coin: {
+					DEFAULT: '#FFD700',
+					light: '#FFF8DC',
+					dark: '#B8860B',
+					fake: '#C0C0C0'
 				}
 			},
 			borderRadius: {
@@ -84,11 +91,57 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'scale-tip-left': {
+					from: { transform: 'rotate(0deg)' },
+					to: { transform: 'rotate(-10deg)' }
+				},
+				'scale-tip-right': {
+					from: { transform: 'rotate(0deg)' },
+					to: { transform: 'rotate(10deg)' }
+				},
+				'scale-balance': {
+					from: { transform: 'rotate(var(--rotation-angle))' },
+					to: { transform: 'rotate(0deg)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
+				},
+				'pulse-subtle': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' }
+				},
+				'fade-in': {
+					from: { opacity: '0' },
+					to: { opacity: '1' }
+				},
+				'bounce-in': {
+					'0%': { transform: 'scale(0)' },
+					'80%': { transform: 'scale(1.1)' },
+					'100%': { transform: 'scale(1)' }
+				},
+				'slide-up': {
+					from: { transform: 'translateY(20px)', opacity: '0' },
+					to: { transform: 'translateY(0)', opacity: '1' }
+				},
+				'shimmer': {
+					'0%': { backgroundPosition: '-200% 0' },
+					'100%': { backgroundPosition: '200% 0' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'scale-tip-left': 'scale-tip-left 0.5s ease-out forwards',
+				'scale-tip-right': 'scale-tip-right 0.5s ease-out forwards',
+				'scale-balance': 'scale-balance 0.5s ease-out forwards',
+				'float': 'float 3s ease-in-out infinite',
+				'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'bounce-in': 'bounce-in 0.5s ease-out',
+				'slide-up': 'slide-up 0.5s ease-out',
+				'shimmer': 'shimmer 2s linear infinite'
 			}
 		}
 	},
