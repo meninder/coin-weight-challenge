@@ -24,6 +24,7 @@ const CoinWeighingGame: React.FC = () => {
   const [hasWeighed, setHasWeighed] = useState<boolean>(false);
   const [labeledFakeCoin, setLabeledFakeCoin] = useState<number | null>(null);
   const [labeledRealCoins, setLabeledRealCoins] = useState<number[]>([]);
+  const [labeledCandidateCoins, setLabeledCandidateCoins] = useState<number[]>([]);
   const [gameComplete, setGameComplete] = useState<boolean>(false);
   const [showResult, setShowResult] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
@@ -43,6 +44,7 @@ const CoinWeighingGame: React.FC = () => {
     setHasWeighed(false);
     setLabeledFakeCoin(null);
     setLabeledRealCoins([]);
+    setLabeledCandidateCoins([]);
     setGameComplete(false);
     setShowResult(false);
     setIsCorrect(false);
@@ -107,15 +109,16 @@ const CoinWeighingGame: React.FC = () => {
     setHasWeighed(true);
   };
   
-  const handleLabelCoin = (id: number, label: 'fake' | 'real' | null) => {
+  const handleLabelCoin = (id: number, label: 'fake' | 'real' | 'candidate' | null) => {
     if (label === 'fake') {
       if (labeledFakeCoin === id) {
         setLabeledFakeCoin(null);
       } else {
         setLabeledFakeCoin(id);
         
-        // Remove from real coins if it was previously labeled as real
+        // Remove from real coins and candidate coins if it was previously labeled as such
         setLabeledRealCoins(prev => prev.filter(coinId => coinId !== id));
+        setLabeledCandidateCoins(prev => prev.filter(coinId => coinId !== id));
       }
     } else if (label === 'real') {
       if (labeledRealCoins.includes(id)) {
@@ -125,11 +128,33 @@ const CoinWeighingGame: React.FC = () => {
         // Add the real label
         setLabeledRealCoins(prev => [...prev, id]);
         
-        // Remove fake label if it was previously labeled as fake
+        // Remove fake label or candidate label if it was previously labeled as such
         if (labeledFakeCoin === id) {
           setLabeledFakeCoin(null);
         }
+        setLabeledCandidateCoins(prev => prev.filter(coinId => coinId !== id));
       }
+    } else if (label === 'candidate') {
+      if (labeledCandidateCoins.includes(id)) {
+        // Remove the candidate label
+        setLabeledCandidateCoins(prev => prev.filter(coinId => coinId !== id));
+      } else {
+        // Add the candidate label
+        setLabeledCandidateCoins(prev => [...prev, id]);
+        
+        // Remove fake label or real label if it was previously labeled as such
+        if (labeledFakeCoin === id) {
+          setLabeledFakeCoin(null);
+        }
+        setLabeledRealCoins(prev => prev.filter(coinId => coinId !== id));
+      }
+    } else if (label === null) {
+      // Remove all labels
+      if (labeledFakeCoin === id) {
+        setLabeledFakeCoin(null);
+      }
+      setLabeledRealCoins(prev => prev.filter(coinId => coinId !== id));
+      setLabeledCandidateCoins(prev => prev.filter(coinId => coinId !== id));
     }
   };
   
@@ -229,6 +254,7 @@ const CoinWeighingGame: React.FC = () => {
             onLabelCoin={handleLabelCoin}
             labeledFakeCoin={labeledFakeCoin}
             labeledRealCoins={labeledRealCoins}
+            labeledCandidateCoins={labeledCandidateCoins}
           />
           
           {/* Add Reset Scale button below the scale */}
@@ -261,6 +287,7 @@ const CoinWeighingGame: React.FC = () => {
               isFake={id === fakeCoinId}
               isLabeledFake={labeledFakeCoin === id}
               isLabeledReal={labeledRealCoins.includes(id)}
+              isLabeledCandidate={labeledCandidateCoins.includes(id)}
               onDragStart={handleDragStart}
               onLabelCoin={handleLabelCoin}
               onAddToScale={handleAddToScale}

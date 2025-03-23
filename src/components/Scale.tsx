@@ -15,9 +15,10 @@ interface ScaleProps {
   onWeigh: () => void;
   disabled: boolean;
   hasWeighed: boolean;
-  onLabelCoin: (id: number, label: 'fake' | 'real' | null) => void;
+  onLabelCoin: (id: number, label: 'fake' | 'real' | 'candidate' | null) => void;
   labeledFakeCoin: number | null;
   labeledRealCoins: number[];
+  labeledCandidateCoins?: number[];
 }
 
 const Scale: React.FC<ScaleProps> = ({
@@ -31,7 +32,8 @@ const Scale: React.FC<ScaleProps> = ({
   hasWeighed,
   onLabelCoin,
   labeledFakeCoin,
-  labeledRealCoins
+  labeledRealCoins,
+  labeledCandidateCoins = []
 }) => {
   const [scaleState, setScaleState] = useState<'balanced' | 'left-heavy' | 'right-heavy'>('balanced');
   
@@ -86,6 +88,16 @@ const Scale: React.FC<ScaleProps> = ({
       }
     });
   };
+
+  // New function to mark all coins on a pan as candidates
+  const markAllCoinsAsCandidate = (side: 'left' | 'right') => {
+    const coins = side === 'left' ? leftPanCoins : rightPanCoins;
+    coins.forEach(coinId => {
+      if (!labeledCandidateCoins.includes(coinId) && labeledFakeCoin !== coinId && !labeledRealCoins.includes(coinId)) {
+        onLabelCoin(coinId, 'candidate');
+      }
+    });
+  };
   
   return (
     <div className="relative flex flex-col items-center justify-center p-8 w-full max-w-3xl mx-auto">
@@ -93,41 +105,77 @@ const Scale: React.FC<ScaleProps> = ({
       {hasWeighed && (
         <div className="flex justify-center gap-4 mb-4">
           {leftPanCoins.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Button
-                size="sm"
-                variant="outline"
-                className="bg-white shadow-sm"
-                onClick={() => markAllCoinsAsReal('left')}
-                disabled={disabled}
+            <div className="flex flex-col gap-2">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
               >
-                <ShieldCheck className="h-3 w-3 mr-1" />
-                Mark Left Pan Real
-              </Button>
-            </motion.div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="bg-white shadow-sm"
+                  onClick={() => markAllCoinsAsReal('left')}
+                  disabled={disabled}
+                >
+                  <ShieldCheck className="h-3 w-3 mr-1" />
+                  Mark Left Pan Real
+                </Button>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="bg-white shadow-sm border-amber-500 text-amber-700"
+                  onClick={() => markAllCoinsAsCandidate('left')}
+                  disabled={disabled}
+                >
+                  <Search className="h-3 w-3 mr-1" />
+                  Mark Left Pan Candidate
+                </Button>
+              </motion.div>
+            </div>
           )}
           
           {rightPanCoins.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Button
-                size="sm"
-                variant="outline"
-                className="bg-white shadow-sm"
-                onClick={() => markAllCoinsAsReal('right')}
-                disabled={disabled}
+            <div className="flex flex-col gap-2">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
               >
-                <ShieldCheck className="h-3 w-3 mr-1" />
-                Mark Right Pan Real
-              </Button>
-            </motion.div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="bg-white shadow-sm"
+                  onClick={() => markAllCoinsAsReal('right')}
+                  disabled={disabled}
+                >
+                  <ShieldCheck className="h-3 w-3 mr-1" />
+                  Mark Right Pan Real
+                </Button>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="bg-white shadow-sm border-amber-500 text-amber-700"
+                  onClick={() => markAllCoinsAsCandidate('right')}
+                  disabled={disabled}
+                >
+                  <Search className="h-3 w-3 mr-1" />
+                  Mark Right Pan Candidate
+                </Button>
+              </motion.div>
+            </div>
           )}
         </div>
       )}
@@ -178,6 +226,7 @@ const Scale: React.FC<ScaleProps> = ({
                   isFake={coinId === fakeCoinId}
                   isLabeledFake={labeledFakeCoin === coinId}
                   isLabeledReal={labeledRealCoins.includes(coinId)}
+                  isLabeledCandidate={labeledCandidateCoins.includes(coinId)}
                   onDragStart={() => {}}
                   onLabelCoin={onLabelCoin}
                   onAddToScale={handleAddToScale}
@@ -208,6 +257,7 @@ const Scale: React.FC<ScaleProps> = ({
                   isFake={coinId === fakeCoinId}
                   isLabeledFake={labeledFakeCoin === coinId}
                   isLabeledReal={labeledRealCoins.includes(coinId)}
+                  isLabeledCandidate={labeledCandidateCoins.includes(coinId)}
                   onDragStart={() => {}}
                   onLabelCoin={onLabelCoin}
                   onAddToScale={handleAddToScale}

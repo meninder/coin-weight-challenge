@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -7,15 +8,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ArrowLeft, ArrowRight, Check, X, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, X, ShieldCheck, Search } from 'lucide-react';
 
 interface CoinProps {
   id: number;
   isFake: boolean;
   isLabeledFake: boolean;
   isLabeledReal: boolean;
+  isLabeledCandidate?: boolean;
   onDragStart: (id: number) => void;
-  onLabelCoin: (id: number, label: 'fake' | 'real' | null) => void;
+  onLabelCoin: (id: number, label: 'fake' | 'real' | 'candidate' | null) => void;
   onAddToScale: (id: number, side: 'left' | 'right') => void;
   disabled?: boolean;
 }
@@ -25,6 +27,7 @@ const Coin: React.FC<CoinProps> = ({
   isFake,
   isLabeledFake,
   isLabeledReal,
+  isLabeledCandidate = false,
   onLabelCoin,
   onAddToScale,
   disabled = false
@@ -33,12 +36,17 @@ const Coin: React.FC<CoinProps> = ({
   const [open, setOpen] = useState(false);
   
   const handleLabelCoinAsFake = () => {
-    onLabelCoin(id, 'fake');
+    onLabelCoin(id, isLabeledFake ? null : 'fake');
     setOpen(false);
   };
 
   const handleLabelCoinAsReal = () => {
-    onLabelCoin(id, 'real');
+    onLabelCoin(id, isLabeledReal ? null : 'real');
+    setOpen(false);
+  };
+
+  const handleLabelCoinAsCandidate = () => {
+    onLabelCoin(id, isLabeledCandidate ? null : 'candidate');
     setOpen(false);
   };
 
@@ -55,6 +63,7 @@ const Coin: React.FC<CoinProps> = ({
             "coin relative", 
             isLabeledFake ? "coin-labeled" : "",
             isLabeledReal ? "coin-labeled-real" : "",
+            isLabeledCandidate ? "coin-labeled-candidate" : "",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
           )}
           initial={{ scale: 0 }}
@@ -79,6 +88,11 @@ const Coin: React.FC<CoinProps> = ({
           {isLabeledReal && (
             <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md">
               <ShieldCheck className="h-3 w-3" />
+            </div>
+          )}
+          {isLabeledCandidate && (
+            <div className="absolute -top-2 -right-2 w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md">
+              <Search className="h-3 w-3" />
             </div>
           )}
         </motion.div>
@@ -116,6 +130,23 @@ const Coin: React.FC<CoinProps> = ({
               <>
                 <ShieldCheck className="mr-2 h-4 w-4 text-green-500" />
                 Mark as Real
+              </>
+            )}
+          </button>
+          <button 
+            onClick={handleLabelCoinAsCandidate}
+            className="w-full text-left px-2 py-1.5 text-sm rounded-sm flex items-center hover:bg-accent focus:bg-accent"
+            disabled={disabled}
+          >
+            {isLabeledCandidate ? (
+              <>
+                <Check className="mr-2 h-4 w-4" />
+                Remove Candidate Label
+              </>
+            ) : (
+              <>
+                <Search className="mr-2 h-4 w-4 text-amber-500" />
+                Mark as Candidate
               </>
             )}
           </button>
