@@ -34,8 +34,8 @@ const Coin: React.FC<CoinProps> = ({
     });
   };
 
-  // Fixed drag handling
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+  // Handle HTML5 drag events separately from Framer Motion
+  const handleNativeDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     if (!disabled) {
       e.dataTransfer.setData("text/plain", id.toString());
       onDragStart(id);
@@ -54,7 +54,8 @@ const Coin: React.FC<CoinProps> = ({
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onDragStart={handleDragStart}
+      // Use the native HTML5 drag event instead of Framer Motion's drag
+      onDragStart={handleNativeDragStart}
       layout
       transition={{
         type: "spring",
