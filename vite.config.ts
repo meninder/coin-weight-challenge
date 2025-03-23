@@ -10,6 +10,16 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    hmr: {
+      // Explicitly configure HMR
+      protocol: 'ws',
+      host: 'localhost',
+      port: 8080,
+    },
+  },
+  define: {
+    // Define the missing WebSocket token
+    __WS_TOKEN__: JSON.stringify("development-ws-token"),
   },
   build: {
     outDir: "docs", // Set output directory to "docs" for GitHub Pages
