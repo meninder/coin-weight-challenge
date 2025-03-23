@@ -1,6 +1,6 @@
 
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";  // Changed from plugin-react-swc to plugin-react
+import react from "@vitejs/plugin-react";  // Using plugin-react which is compatible with Vite 6
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
