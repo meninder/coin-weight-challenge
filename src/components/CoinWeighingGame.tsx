@@ -16,6 +16,7 @@ const CoinWeighingGame: React.FC = () => {
   const [weighCount, setWeighCount] = useState<number>(0);
   const [hasWeighed, setHasWeighed] = useState<boolean>(false);
   const [labeledFakeCoin, setLabeledFakeCoin] = useState<number | null>(null);
+  const [labeledRealCoins, setLabeledRealCoins] = useState<number[]>([]);
   const [gameComplete, setGameComplete] = useState<boolean>(false);
   
   const { toast } = useToast();
@@ -34,6 +35,7 @@ const CoinWeighingGame: React.FC = () => {
     setWeighCount(0);
     setHasWeighed(false);
     setLabeledFakeCoin(null);
+    setLabeledRealCoins([]);
     setGameComplete(false);
     console.log(`New game: Fake coin is ${randomFakeCoin}`);
   };
@@ -106,25 +108,58 @@ const CoinWeighingGame: React.FC = () => {
     });
   };
   
-  const handleLabelCoin = (id: number) => {
-    if (labeledFakeCoin === id) {
-      setLabeledFakeCoin(null);
-    } else {
-      setLabeledFakeCoin(id);
-      
-      if (id === fakeCoinId) {
-        setGameComplete(true);
-        toast({
-          title: "Congratulations!",
-          description: "You found the fake coin correctly!",
-          variant: "default",
-        });
+  const handleLabelCoin = (id: number, label: 'fake' | 'real' | null) => {
+    if (label === 'fake') {
+      if (labeledFakeCoin === id) {
+        setLabeledFakeCoin(null);
       } else {
-        toast({
-          title: "Try Again",
-          description: "That's not the fake coin. Keep trying!",
-          variant: "destructive",
-        });
+        setLabeledFakeCoin(id);
+        
+        // Remove from real coins if it was previously labeled as real
+        setLabeledRealCoins(prev => prev.filter(coinId => coinId !== id));
+        
+        if (id === fakeCoinId) {
+          setGameComplete(true);
+          toast({
+            title: "Congratulations!",
+            description: "You found the fake coin correctly!",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Try Again",
+            description: "That's not the fake coin. Keep trying!",
+            variant: "destructive",
+          });
+        }
+      }
+    } else if (label === 'real') {
+      if (labeledRealCoins.includes(id)) {
+        // Remove the real label
+        setLabeledRealCoins(prev => prev.filter(coinId => coinId !== id));
+      } else {
+        // Add the real label
+        setLabeledRealCoins(prev => [...prev, id]);
+        
+        // Remove fake label if it was previously labeled as fake
+        if (labeledFakeCoin === id) {
+          setLabeledFakeCoin(null);
+        }
+
+        // Provide feedback based on whether this coin is actually real
+        if (id !== fakeCoinId) {
+          toast({
+            title: "Correct!",
+            description: `Coin ${id} is indeed a real coin.`,
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Incorrect",
+            description: `Coin ${id} is not a real coin. Keep investigating!`,
+            variant: "destructive",
+          });
+        }
       }
     }
   };
@@ -207,6 +242,7 @@ const CoinWeighingGame: React.FC = () => {
             hasWeighed={hasWeighed}
             onLabelCoin={handleLabelCoin}
             labeledFakeCoin={labeledFakeCoin}
+            labeledRealCoins={labeledRealCoins}
           />
         </div>
         
@@ -222,6 +258,7 @@ const CoinWeighingGame: React.FC = () => {
               id={id}
               isFake={id === fakeCoinId}
               isLabeledFake={labeledFakeCoin === id}
+              isLabeledReal={labeledRealCoins.includes(id)}
               onDragStart={handleDragStart}
               onLabelCoin={handleLabelCoin}
               onAddToScale={handleAddToScale}

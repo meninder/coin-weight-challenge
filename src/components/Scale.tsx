@@ -13,8 +13,9 @@ interface ScaleProps {
   onWeigh: () => void;
   disabled: boolean;
   hasWeighed: boolean;
-  onLabelCoin: (id: number) => void;
+  onLabelCoin: (id: number, label: 'fake' | 'real' | null) => void;
   labeledFakeCoin: number | null;
+  labeledRealCoins: number[];
 }
 
 const Scale: React.FC<ScaleProps> = ({
@@ -27,7 +28,8 @@ const Scale: React.FC<ScaleProps> = ({
   disabled,
   hasWeighed,
   onLabelCoin,
-  labeledFakeCoin
+  labeledFakeCoin,
+  labeledRealCoins
 }) => {
   const [scaleState, setScaleState] = useState<'balanced' | 'left-heavy' | 'right-heavy'>('balanced');
   
@@ -120,6 +122,7 @@ const Scale: React.FC<ScaleProps> = ({
                   id={coinId}
                   isFake={coinId === fakeCoinId}
                   isLabeledFake={labeledFakeCoin === coinId}
+                  isLabeledReal={labeledRealCoins.includes(coinId)}
                   onDragStart={() => {}}
                   onLabelCoin={onLabelCoin}
                   onAddToScale={handleAddToScale}
@@ -149,6 +152,7 @@ const Scale: React.FC<ScaleProps> = ({
                   id={coinId}
                   isFake={coinId === fakeCoinId}
                   isLabeledFake={labeledFakeCoin === coinId}
+                  isLabeledReal={labeledRealCoins.includes(coinId)}
                   onDragStart={() => {}}
                   onLabelCoin={onLabelCoin}
                   onAddToScale={handleAddToScale}
