@@ -114,8 +114,8 @@ const Scale: React.FC<ScaleProps> = ({
         </motion.div>
         
         <div className="flex justify-between w-96">
-          {/* Left Pan */}
-          <div className="flex flex-col items-center gap-2">
+          {/* Left Pan with Mark Real Button on side */}
+          <div className="flex items-start gap-3">
             <motion.div
               className={cn(
                 "scale-pan", 
@@ -144,22 +144,48 @@ const Scale: React.FC<ScaleProps> = ({
                 ))}
               </div>
             </motion.div>
-            {leftPanCoins.length > 0 && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-xs"
-                onClick={() => markAllCoinsAsReal('left')}
-                disabled={disabled}
+            
+            {hasWeighed && leftPanCoins.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
               >
-                <ShieldCheck className="h-3 w-3 mr-1" />
-                Mark All as Real
-              </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-xs whitespace-nowrap"
+                  onClick={() => markAllCoinsAsReal('left')}
+                  disabled={disabled}
+                >
+                  <ShieldCheck className="h-3 w-3 mr-1" />
+                  Mark All Real
+                </Button>
+              </motion.div>
             )}
           </div>
           
-          {/* Right Pan */}
-          <div className="flex flex-col items-center gap-2">
+          {/* Right Pan with Mark Real Button on side */}
+          <div className="flex items-start gap-3">
+            {hasWeighed && rightPanCoins.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-xs whitespace-nowrap"
+                  onClick={() => markAllCoinsAsReal('right')}
+                  disabled={disabled}
+                >
+                  <ShieldCheck className="h-3 w-3 mr-1" />
+                  Mark All Real
+                </Button>
+              </motion.div>
+            )}
+            
             <motion.div
               className={cn(
                 "scale-pan", 
@@ -188,18 +214,6 @@ const Scale: React.FC<ScaleProps> = ({
                 ))}
               </div>
             </motion.div>
-            {rightPanCoins.length > 0 && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-xs"
-                onClick={() => markAllCoinsAsReal('right')}
-                disabled={disabled}
-              >
-                <ShieldCheck className="h-3 w-3 mr-1" />
-                Mark All as Real
-              </Button>
-            )}
           </div>
         </div>
       </motion.div>
