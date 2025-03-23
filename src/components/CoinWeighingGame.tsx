@@ -4,9 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Coin from './Coin';
 import Scale from './Scale';
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
-import { RotateCcw, Crown, RefreshCw } from 'lucide-react';
+import { RotateCcw, Crown, RefreshCw, CheckCircle } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const CoinWeighingGame: React.FC = () => {
   const [fakeCoinId, setFakeCoinId] = useState<number>(-1);
@@ -18,8 +25,8 @@ const CoinWeighingGame: React.FC = () => {
   const [labeledFakeCoin, setLabeledFakeCoin] = useState<number | null>(null);
   const [labeledRealCoins, setLabeledRealCoins] = useState<number[]>([]);
   const [gameComplete, setGameComplete] = useState<boolean>(false);
-  
-  const { toast } = useToast();
+  const [showResult, setShowResult] = useState<boolean>(false);
+  const [isCorrect, setIsCorrect] = useState<boolean>(false);
   
   // Initialize game with random fake coin
   useEffect(() => {
@@ -37,6 +44,8 @@ const CoinWeighingGame: React.FC = () => {
     setLabeledFakeCoin(null);
     setLabeledRealCoins([]);
     setGameComplete(false);
+    setShowResult(false);
+    setIsCorrect(false);
     console.log(`New game: Fake coin is ${randomFakeCoin}`);
   };
   
@@ -91,21 +100,11 @@ const CoinWeighingGame: React.FC = () => {
   
   const handleWeigh = () => {
     if (leftPanCoins.length === 0 || rightPanCoins.length === 0) {
-      toast({
-        title: "Cannot weigh",
-        description: "Place at least one coin on each side of the scale.",
-        variant: "destructive",
-      });
       return;
     }
     
     setWeighCount(weighCount + 1);
     setHasWeighed(true);
-    
-    toast({
-      title: "Scale used",
-      description: `You have weighed the coins ${weighCount + 1} ${weighCount + 1 === 1 ? 'time' : 'times'}.`,
-    });
   };
   
   const handleLabelCoin = (id: number, label: 'fake' | 'real' | null) => {
@@ -117,21 +116,6 @@ const CoinWeighingGame: React.FC = () => {
         
         // Remove from real coins if it was previously labeled as real
         setLabeledRealCoins(prev => prev.filter(coinId => coinId !== id));
-        
-        if (id === fakeCoinId) {
-          setGameComplete(true);
-          toast({
-            title: "Congratulations!",
-            description: "You found the fake coin correctly!",
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "Try Again",
-            description: "That's not the fake coin. Keep trying!",
-            variant: "destructive",
-          });
-        }
       }
     } else if (label === 'real') {
       if (labeledRealCoins.includes(id)) {
@@ -145,31 +129,23 @@ const CoinWeighingGame: React.FC = () => {
         if (labeledFakeCoin === id) {
           setLabeledFakeCoin(null);
         }
-
-        // Provide feedback based on whether this coin is actually real
-        if (id !== fakeCoinId) {
-          toast({
-            title: "Correct!",
-            description: `Coin ${id} is indeed a real coin.`,
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "Incorrect",
-            description: `Coin ${id} is not a real coin. Keep investigating!`,
-            variant: "destructive",
-          });
-        }
       }
     }
   };
   
+  const handleSubmitAnswer = () => {
+    if (labeledFakeCoin === null) {
+      return;
+    }
+    
+    const correct = labeledFakeCoin === fakeCoinId;
+    setIsCorrect(correct);
+    setShowResult(true);
+    setGameComplete(true);
+  };
+  
   const handleReset = () => {
     resetGame();
-    toast({
-      title: "Game Reset",
-      description: "A new fake coin has been chosen.",
-    });
   };
   
   // New function to reset the scale without resetting the whole game
@@ -180,11 +156,6 @@ const CoinWeighingGame: React.FC = () => {
     setLeftPanCoins([]);
     setRightPanCoins([]);
     setHasWeighed(false);
-    
-    toast({
-      title: "Scale Reset",
-      description: "All coins have been removed from the scale.",
-    });
   };
   
   return (
@@ -233,7 +204,7 @@ const CoinWeighingGame: React.FC = () => {
               </span>
             </motion.div>
             
-            {gameComplete && (
+            {gameComplete && !showResult && (
               <motion.div
                 className="px-4 py-2 bg-green-100 text-green-800 rounded-full shadow-sm flex items-center"
                 initial={{ opacity: 0, scale: 0 }}
@@ -304,7 +275,25 @@ const CoinWeighingGame: React.FC = () => {
           )}
         </motion.div>
         
-        {gameComplete && (
+        {!gameComplete && labeledFakeCoin !== null && (
+          <motion.div
+            className="mt-6 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Button 
+              onClick={handleSubmitAnswer} 
+              size="lg" 
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white"
+            >
+              <CheckCircle className="h-5 w-5 mr-2" />
+              Submit Answer
+            </Button>
+          </motion.div>
+        )}
+        
+        {gameComplete && !showResult && (
           <motion.div
             className="mt-6 text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -317,6 +306,36 @@ const CoinWeighingGame: React.FC = () => {
           </motion.div>
         )}
       </motion.div>
+      
+      {/* Result Dialog */}
+      <Dialog open={showResult} onOpenChange={setShowResult}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className={isCorrect ? "text-green-600" : "text-red-600"}>
+              {isCorrect ? "Congratulations!" : "Incorrect Answer"}
+            </DialogTitle>
+            <DialogDescription>
+              {isCorrect 
+                ? `You correctly identified Coin ${fakeCoinId} as the fake coin in ${weighCount} weighs!` 
+                : `Sorry, Coin ${labeledFakeCoin} is not the fake coin. The fake coin was Coin ${fakeCoinId}.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button 
+              onClick={() => {
+                setShowResult(false);
+                resetGame();
+              }}
+              className={isCorrect 
+                ? "bg-gradient-to-r from-green-500 to-blue-500" 
+                : "bg-gradient-to-r from-red-500 to-blue-500"
+              }
+            >
+              Play Again
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
