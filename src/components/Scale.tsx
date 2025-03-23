@@ -89,6 +89,49 @@ const Scale: React.FC<ScaleProps> = ({
   
   return (
     <div className="relative flex flex-col items-center justify-center p-8 w-full max-w-3xl mx-auto">
+      {/* Action Buttons Above Scale - Only visible after weighing */}
+      {hasWeighed && (
+        <div className="flex justify-center gap-4 mb-4">
+          {leftPanCoins.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-white shadow-sm"
+                onClick={() => markAllCoinsAsReal('left')}
+                disabled={disabled}
+              >
+                <ShieldCheck className="h-3 w-3 mr-1" />
+                Mark Left Pan Real
+              </Button>
+            </motion.div>
+          )}
+          
+          {rightPanCoins.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-white shadow-sm"
+                onClick={() => markAllCoinsAsReal('right')}
+                disabled={disabled}
+              >
+                <ShieldCheck className="h-3 w-3 mr-1" />
+                Mark Right Pan Real
+              </Button>
+            </motion.div>
+          )}
+        </div>
+      )}
+      
       <motion.div 
         className="flex flex-col items-center"
         initial={{ opacity: 0, y: 20 }}
@@ -174,49 +217,6 @@ const Scale: React.FC<ScaleProps> = ({
             </div>
           </motion.div>
         </div>
-        
-        {/* Mark All as Real buttons - placed below the scale */}
-        {hasWeighed && (
-          <div className="mt-4 flex justify-center gap-4">
-            {leftPanCoins.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-xs bg-white"
-                  onClick={() => markAllCoinsAsReal('left')}
-                  disabled={disabled}
-                >
-                  <ShieldCheck className="h-3 w-3 mr-1" />
-                  Mark Left Pan Real
-                </Button>
-              </motion.div>
-            )}
-            
-            {rightPanCoins.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-xs bg-white"
-                  onClick={() => markAllCoinsAsReal('right')}
-                  disabled={disabled}
-                >
-                  <ShieldCheck className="h-3 w-3 mr-1" />
-                  Mark Right Pan Real
-                </Button>
-              </motion.div>
-            )}
-          </div>
-        )}
       </motion.div>
       
       <motion.button
