@@ -34,8 +34,8 @@ const Coin: React.FC<CoinProps> = ({
     });
   };
 
-  // Handle HTML5 drag events separately from Framer Motion
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+  // We need to use the native HTML5 drag API
+  const handleNativeDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     if (!disabled) {
       e.dataTransfer.setData("text/plain", id.toString());
       onDragStart(id);
@@ -49,14 +49,14 @@ const Coin: React.FC<CoinProps> = ({
         isLabeledFake ? "coin-labeled" : "",
         disabled ? "opacity-50 cursor-not-allowed" : ""
       )}
-      // Use the native HTML5 draggable attribute instead of Framer Motion's drag
+      // Use the native HTML5 draggable attribute
       draggable={!disabled}
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      // Don't use Framer Motion's onDragStart here, we'll use the native one
-      onDragStart={handleDragStart}
+      // Important: Use the native HTML5 drag start event
+      // Instead of using Framer Motion's onDragStart prop which has a different signature
       layout
       transition={{
         type: "spring",
@@ -64,7 +64,12 @@ const Coin: React.FC<CoinProps> = ({
         damping: 20
       }}
     >
-      <div className="coin-inner">
+      <div 
+        className="coin-inner"
+        // Apply the drag handler to the inner div instead of the motion.div
+        onDragStart={handleNativeDragStart}
+        draggable={!disabled}
+      >
         <span>{id}</span>
       </div>
       <button 
