@@ -6,7 +6,7 @@ import Scale from './Scale';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
-import { RotateCcw, Crown } from 'lucide-react';
+import { RotateCcw, Crown, RefreshCw } from 'lucide-react';
 
 const CoinWeighingGame: React.FC = () => {
   const [fakeCoinId, setFakeCoinId] = useState<number>(-1);
@@ -172,6 +172,21 @@ const CoinWeighingGame: React.FC = () => {
     });
   };
   
+  // New function to reset the scale without resetting the whole game
+  const handleResetScale = () => {
+    // Move all coins from scale back to the main area
+    const allScaleCoins = [...leftPanCoins, ...rightPanCoins];
+    setCoins([...coins, ...allScaleCoins].sort((a, b) => a - b));
+    setLeftPanCoins([]);
+    setRightPanCoins([]);
+    setHasWeighed(false);
+    
+    toast({
+      title: "Scale Reset",
+      description: "All coins have been removed from the scale.",
+    });
+  };
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
       <motion.div 
@@ -202,7 +217,7 @@ const CoinWeighingGame: React.FC = () => {
               onClick={handleReset}
             >
               <RotateCcw className="h-4 w-4 mr-2" />
-              Reset
+              Start Again
             </Button>
           </motion.div>
         </div>
@@ -244,6 +259,22 @@ const CoinWeighingGame: React.FC = () => {
             labeledFakeCoin={labeledFakeCoin}
             labeledRealCoins={labeledRealCoins}
           />
+          
+          {/* Add Reset Scale button below the scale */}
+          {(leftPanCoins.length > 0 || rightPanCoins.length > 0) && (
+            <div className="flex justify-center mt-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetScale}
+                disabled={gameComplete}
+                className="bg-white"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset Scale
+              </Button>
+            </div>
+          )}
         </div>
         
         <Separator className="my-4" />
