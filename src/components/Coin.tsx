@@ -34,7 +34,7 @@ const Coin: React.FC<CoinProps> = ({
     });
   };
 
-  // Fixed the draggable functionality
+  // Fixed drag handling
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     if (!disabled) {
       e.dataTransfer.setData("text/plain", id.toString());
