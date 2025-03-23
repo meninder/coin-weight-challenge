@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -36,35 +35,16 @@ const Coin: React.FC<CoinProps> = ({
   const handleLabelCoinAsFake = () => {
     onLabelCoin(id, 'fake');
     setOpen(false);
-    toast({
-      title: isLabeledFake ? "Label removed" : "Coin labeled as fake",
-      description: isLabeledFake 
-        ? `Coin ${id} is no longer labeled as fake.` 
-        : `You've labeled Coin ${id} as the fake coin.`,
-      duration: 2000,
-    });
   };
 
   const handleLabelCoinAsReal = () => {
     onLabelCoin(id, 'real');
     setOpen(false);
-    toast({
-      title: isLabeledReal ? "Label removed" : "Coin labeled as real",
-      description: isLabeledReal 
-        ? `Coin ${id} is no longer labeled as real.` 
-        : `You've labeled Coin ${id} as a real coin.`,
-      duration: 2000,
-    });
   };
 
   const handleAddToScale = (side: 'left' | 'right') => {
     onAddToScale(id, side);
     setOpen(false);
-    toast({
-      title: "Coin added to scale",
-      description: `Coin ${id} has been added to the ${side} side of the scale.`,
-      duration: 2000,
-    });
   };
 
   return (
