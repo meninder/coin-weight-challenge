@@ -114,108 +114,109 @@ const Scale: React.FC<ScaleProps> = ({
         </motion.div>
         
         <div className="flex justify-between w-96">
-          {/* Left Pan with Mark Real Button on side */}
-          <div className="flex items-start gap-3">
-            <motion.div
-              className={cn(
-                "scale-pan", 
-                leftPanCoins.length > 0 && "bg-gray-300"
-              )}
-              animate={{
-                y: scaleState === 'left-heavy' ? 20 : scaleState === 'right-heavy' ? -10 : 0
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop('left', e)}
-            >
-              <div className="flex flex-wrap gap-1 p-2 justify-center">
-                {leftPanCoins.map(coinId => (
-                  <Coin
-                    key={`left-${coinId}`}
-                    id={coinId}
-                    isFake={coinId === fakeCoinId}
-                    isLabeledFake={labeledFakeCoin === coinId}
-                    isLabeledReal={labeledRealCoins.includes(coinId)}
-                    onDragStart={() => {}}
-                    onLabelCoin={onLabelCoin}
-                    onAddToScale={handleAddToScale}
-                    disabled={disabled}
-                  />
-                ))}
-              </div>
-            </motion.div>
-            
-            {hasWeighed && leftPanCoins.length > 0 && (
+          {/* Left Pan */}
+          <motion.div
+            className={cn(
+              "scale-pan", 
+              leftPanCoins.length > 0 && "bg-gray-300"
+            )}
+            animate={{
+              y: scaleState === 'left-heavy' ? 20 : scaleState === 'right-heavy' ? -10 : 0
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop('left', e)}
+          >
+            <div className="flex flex-wrap gap-1 p-2 justify-center">
+              {leftPanCoins.map(coinId => (
+                <Coin
+                  key={`left-${coinId}`}
+                  id={coinId}
+                  isFake={coinId === fakeCoinId}
+                  isLabeledFake={labeledFakeCoin === coinId}
+                  isLabeledReal={labeledRealCoins.includes(coinId)}
+                  onDragStart={() => {}}
+                  onLabelCoin={onLabelCoin}
+                  onAddToScale={handleAddToScale}
+                  disabled={disabled}
+                />
+              ))}
+            </div>
+          </motion.div>
+          
+          {/* Right Pan */}
+          <motion.div
+            className={cn(
+              "scale-pan", 
+              rightPanCoins.length > 0 && "bg-gray-300"
+            )}
+            animate={{
+              y: scaleState === 'right-heavy' ? 20 : scaleState === 'left-heavy' ? -10 : 0
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop('right', e)}
+          >
+            <div className="flex flex-wrap gap-1 p-2 justify-center">
+              {rightPanCoins.map(coinId => (
+                <Coin
+                  key={`right-${coinId}`}
+                  id={coinId}
+                  isFake={coinId === fakeCoinId}
+                  isLabeledFake={labeledFakeCoin === coinId}
+                  isLabeledReal={labeledRealCoins.includes(coinId)}
+                  onDragStart={() => {}}
+                  onLabelCoin={onLabelCoin}
+                  onAddToScale={handleAddToScale}
+                  disabled={disabled}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+        
+        {/* Mark All as Real buttons - placed below the scale */}
+        {hasWeighed && (
+          <div className="mt-4 flex justify-center gap-4">
+            {leftPanCoins.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-xs whitespace-nowrap"
+                  className="text-xs bg-white"
                   onClick={() => markAllCoinsAsReal('left')}
                   disabled={disabled}
                 >
                   <ShieldCheck className="h-3 w-3 mr-1" />
-                  Mark All Real
+                  Mark Left Pan Real
                 </Button>
               </motion.div>
             )}
-          </div>
-          
-          {/* Right Pan with Mark Real Button on side */}
-          <div className="flex items-start gap-3">
-            {hasWeighed && rightPanCoins.length > 0 && (
+            
+            {rightPanCoins.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-xs whitespace-nowrap"
+                  className="text-xs bg-white"
                   onClick={() => markAllCoinsAsReal('right')}
                   disabled={disabled}
                 >
                   <ShieldCheck className="h-3 w-3 mr-1" />
-                  Mark All Real
+                  Mark Right Pan Real
                 </Button>
               </motion.div>
             )}
-            
-            <motion.div
-              className={cn(
-                "scale-pan", 
-                rightPanCoins.length > 0 && "bg-gray-300"
-              )}
-              animate={{
-                y: scaleState === 'right-heavy' ? 20 : scaleState === 'left-heavy' ? -10 : 0
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop('right', e)}
-            >
-              <div className="flex flex-wrap gap-1 p-2 justify-center">
-                {rightPanCoins.map(coinId => (
-                  <Coin
-                    key={`right-${coinId}`}
-                    id={coinId}
-                    isFake={coinId === fakeCoinId}
-                    isLabeledFake={labeledFakeCoin === coinId}
-                    isLabeledReal={labeledRealCoins.includes(coinId)}
-                    onDragStart={() => {}}
-                    onLabelCoin={onLabelCoin}
-                    onAddToScale={handleAddToScale}
-                    disabled={disabled}
-                  />
-                ))}
-              </div>
-            </motion.div>
           </div>
-        </div>
+        )}
       </motion.div>
       
       <motion.button
