@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Coin from './Coin';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Search } from 'lucide-react';
 
 interface ScaleProps {
   leftPanCoins: number[];
@@ -37,7 +36,6 @@ const Scale: React.FC<ScaleProps> = ({
 }) => {
   const [scaleState, setScaleState] = useState<'balanced' | 'left-heavy' | 'right-heavy'>('balanced');
   
-  // Calculate the total weight - the fake coin weighs less
   useEffect(() => {
     if (hasWeighed) {
       const leftWeight = leftPanCoins.reduce((acc, coinId) => acc + (coinId === fakeCoinId ? 0 : 1), 0);
@@ -55,7 +53,6 @@ const Scale: React.FC<ScaleProps> = ({
     }
   }, [hasWeighed, leftPanCoins, rightPanCoins, fakeCoinId]);
   
-  // This is kept for compatibility, but we're not using drag and drop now
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     if (disabled) return;
     e.preventDefault();
@@ -69,7 +66,6 @@ const Scale: React.FC<ScaleProps> = ({
   };
 
   const handleAddToScale = (coinId: number, side: 'left' | 'right') => {
-    // For coins already on the scale, this just moves them from one side to the other
     if (leftPanCoins.includes(coinId)) {
       onRemoveCoin('left', coinId);
     }
@@ -79,7 +75,6 @@ const Scale: React.FC<ScaleProps> = ({
     onAddCoin(side, coinId);
   };
   
-  // New function to mark all coins on a pan as real
   const markAllCoinsAsReal = (side: 'left' | 'right') => {
     const coins = side === 'left' ? leftPanCoins : rightPanCoins;
     coins.forEach(coinId => {
@@ -89,7 +84,6 @@ const Scale: React.FC<ScaleProps> = ({
     });
   };
 
-  // New function to mark all coins on a pan as candidates
   const markAllCoinsAsCandidate = (side: 'left' | 'right') => {
     const coins = side === 'left' ? leftPanCoins : rightPanCoins;
     coins.forEach(coinId => {
@@ -101,7 +95,6 @@ const Scale: React.FC<ScaleProps> = ({
   
   return (
     <div className="relative flex flex-col items-center justify-center p-8 w-full max-w-3xl mx-auto">
-      {/* Action Buttons Above Scale - Only visible after weighing */}
       {hasWeighed && (
         <div className="flex justify-center gap-4 mb-4">
           {leftPanCoins.length > 0 && (
@@ -186,10 +179,8 @@ const Scale: React.FC<ScaleProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Fulcrum */}
         <div className="w-4 h-16 bg-gray-800 rounded-t-lg z-10"></div>
         
-        {/* Balance Beam */}
         <motion.div 
           className="scale-bar w-96 mb-4 relative"
           animate={{
@@ -197,15 +188,11 @@ const Scale: React.FC<ScaleProps> = ({
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          {/* Left Pan Connection */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-20 bg-gray-700"></div>
-          
-          {/* Right Pan Connection */}
           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-20 bg-gray-700"></div>
         </motion.div>
         
         <div className="flex justify-between w-96">
-          {/* Left Pan */}
           <motion.div
             className={cn(
               "scale-pan", 
@@ -236,7 +223,6 @@ const Scale: React.FC<ScaleProps> = ({
             </div>
           </motion.div>
           
-          {/* Right Pan */}
           <motion.div
             className={cn(
               "scale-pan", 
