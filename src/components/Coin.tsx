@@ -34,11 +34,18 @@ const Coin: React.FC<CoinProps> = ({
     });
   };
 
+  // Fixed the draggable functionality
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!disabled) {
+      e.dataTransfer.setData("text/plain", id.toString());
+      onDragStart(id);
+    }
+  };
+
   return (
     <motion.div
       className={cn(
         "coin", 
-        isFake ? "fake" : "",
         isLabeledFake ? "coin-labeled" : "",
         disabled ? "opacity-50 cursor-not-allowed" : ""
       )}
@@ -47,12 +54,7 @@ const Coin: React.FC<CoinProps> = ({
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onDragStart={(e) => {
-        if (!disabled) {
-          e.dataTransfer.setData("text/plain", id.toString());
-          onDragStart(id);
-        }
-      }}
+      onDragStart={handleDragStart}
       layout
       transition={{
         type: "spring",

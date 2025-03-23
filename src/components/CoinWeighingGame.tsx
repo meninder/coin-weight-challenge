@@ -6,7 +6,7 @@ import Scale from './Scale';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
-import { Info, RotateCcw, Crown } from 'lucide-react';
+import { RotateCcw, Crown } from 'lucide-react';
 
 const CoinWeighingGame: React.FC = () => {
   const [fakeCoinId, setFakeCoinId] = useState<number>(-1);
@@ -17,7 +17,6 @@ const CoinWeighingGame: React.FC = () => {
   const [hasWeighed, setHasWeighed] = useState<boolean>(false);
   const [labeledFakeCoin, setLabeledFakeCoin] = useState<number | null>(null);
   const [gameComplete, setGameComplete] = useState<boolean>(false);
-  const [showInstructions, setShowInstructions] = useState<boolean>(true);
   
   const { toast } = useToast();
   
@@ -82,21 +81,12 @@ const CoinWeighingGame: React.FC = () => {
       return;
     }
     
-    if (weighCount >= 2) {
-      toast({
-        title: "Maximum weighs reached",
-        description: "You can only use the scale twice. Try labeling the fake coin now.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     setWeighCount(weighCount + 1);
     setHasWeighed(true);
     
     toast({
       title: "Scale used",
-      description: `You have ${2 - (weighCount + 1)} weighing${2 - (weighCount + 1) !== 1 ? 's' : ''} left.`,
+      description: `You have weighed the coins ${weighCount + 1} ${weighCount + 1 === 1 ? 'time' : 'times'}.`,
     });
   };
   
@@ -158,15 +148,6 @@ const CoinWeighingGame: React.FC = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setShowInstructions(!showInstructions)}
-            >
-              <Info className="h-4 w-4 mr-2" />
-              Help
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
               onClick={handleReset}
             >
               <RotateCcw className="h-4 w-4 mr-2" />
@@ -175,37 +156,14 @@ const CoinWeighingGame: React.FC = () => {
           </motion.div>
         </div>
         
-        <AnimatePresence>
-          {showInstructions && (
-            <motion.div 
-              className="bg-blue-50 rounded-lg p-4 mb-6 text-sm text-blue-800"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3 className="font-bold mb-2">Instructions:</h3>
-              <ol className="list-decimal pl-5 space-y-1">
-                <li>There are 9 coins, and one is fake (lighter than the others).</li>
-                <li>Drag coins onto either side of the scale to weigh them.</li>
-                <li>You can only use the scale twice to find the fake coin.</li>
-                <li>Click on a coin and select the "!" button to label it as fake.</li>
-                <li>To complete the puzzle, you must correctly identify the fake coin.</li>
-              </ol>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
         <div className="bg-gradient-to-r from-blue-50 via-blue-100 to-blue-50 p-4 rounded-lg mb-4">
           <div className="flex justify-center gap-2 items-center mb-2">
             <motion.div
               className="px-4 py-2 bg-white rounded-full shadow-sm flex items-center"
-              animate={{ scale: weighCount === 2 ? [1, 1.05, 1] : 1 }}
-              transition={{ repeat: weighCount === 2 ? Infinity : 0, duration: 2 }}
             >
               <span className="font-medium text-gray-600 mr-2">Weighs Used:</span>
-              <span className={`font-bold ${weighCount === 2 ? 'text-red-500' : 'text-blue-600'}`}>
-                {weighCount}/2
+              <span className="font-bold text-blue-600">
+                {weighCount}
               </span>
             </motion.div>
             
@@ -229,7 +187,7 @@ const CoinWeighingGame: React.FC = () => {
             onAddCoin={handleAddCoin}
             onRemoveCoin={handleRemoveCoin}
             onWeigh={handleWeigh}
-            disabled={weighCount >= 2 || gameComplete}
+            disabled={gameComplete}
             hasWeighed={hasWeighed}
           />
         </div>

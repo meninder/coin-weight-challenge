@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,16 +96,12 @@
 
 @layer components {
   .coin {
-    @apply w-14 h-14 rounded-full shadow-md flex items-center justify-center cursor-pointer transition-all duration-300 select-none;
+    @apply w-14 h-14 rounded-full shadow-md flex items-center justify-center cursor-pointer transition-all duration-300 select-none relative;
   }
 
   .coin-inner {
-    @apply w-[85%] h-[85%] rounded-full flex items-center justify-center text-coin-dark font-bold bg-coin-light;
+    @apply w-[85%] h-[85%] rounded-full flex items-center justify-center text-coin-dark font-bold;
     background: linear-gradient(135deg, #FFD700, #B8860B);
-  }
-
-  .coin.fake .coin-inner {
-    background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
   }
 
   .coin-selected {
