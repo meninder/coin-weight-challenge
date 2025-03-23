@@ -1,6 +1,6 @@
 
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";  // Changed from plugin-react-swc to plugin-react
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     outDir: "docs", // Set output directory to "docs" for GitHub Pages
   },
   plugins: [
-    react(),
+    react(),  // Using standard React plugin instead of SWC
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
