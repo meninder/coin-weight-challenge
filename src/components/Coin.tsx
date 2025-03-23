@@ -1,14 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 
 interface CoinProps {
@@ -30,9 +29,11 @@ const Coin: React.FC<CoinProps> = ({
   disabled = false
 }) => {
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
   
   const handleLabelCoin = () => {
     onLabelCoin(id);
+    setOpen(false);
     toast({
       title: isLabeledFake ? "Label removed" : "Coin labeled as fake",
       description: isLabeledFake 
@@ -44,6 +45,7 @@ const Coin: React.FC<CoinProps> = ({
 
   const handleAddToScale = (side: 'left' | 'right') => {
     onAddToScale(id, side);
+    setOpen(false);
     toast({
       title: "Coin added to scale",
       description: `Coin ${id} has been added to the ${side} side of the scale.`,
@@ -52,13 +54,13 @@ const Coin: React.FC<CoinProps> = ({
   };
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger disabled={disabled}>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild disabled={disabled}>
         <motion.div
           className={cn(
-            "coin", 
+            "coin relative", 
             isLabeledFake ? "coin-labeled" : "",
-            disabled ? "opacity-50 cursor-not-allowed" : ""
+            disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
           )}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -74,51 +76,51 @@ const Coin: React.FC<CoinProps> = ({
           <div className="coin-inner">
             <span>{id}</span>
           </div>
+          {isLabeledFake && (
+            <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md">
+              !
+            </div>
+          )}
+        </motion.div>
+      </PopoverTrigger>
+      <PopoverContent className="w-48 p-0">
+        <div className="p-1">
           <button 
             onClick={handleLabelCoin}
-            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md opacity-0 hover:opacity-100 transition-opacity focus:opacity-100"
-            aria-label={isLabeledFake ? "Remove fake label" : "Label as fake"}
+            className="w-full text-left px-2 py-1.5 text-sm rounded-sm flex items-center hover:bg-accent focus:bg-accent"
+            disabled={disabled}
           >
-            {isLabeledFake ? "×" : "!"}
+            {isLabeledFake ? (
+              <>
+                <Check className="mr-2 h-4 w-4" />
+                Mark as Real
+              </>
+            ) : (
+              <>
+                <X className="mr-2 h-4 w-4" />
+                Mark as Fake
+              </>
+            )}
           </button>
-        </motion.div>
-      </ContextMenuTrigger>
-      <ContextMenuContent className="w-48">
-        <ContextMenuItem 
-          onClick={() => handleLabelCoin()}
-          className="flex items-center"
-          disabled={disabled}
-        >
-          {isLabeledFake ? (
-            <>
-              <Check className="mr-2 h-4 w-4" />
-              Mark as Real
-            </>
-          ) : (
-            <>
-              <X className="mr-2 h-4 w-4" />
-              Mark as Fake
-            </>
-          )}
-        </ContextMenuItem>
-        <ContextMenuItem 
-          onClick={() => handleAddToScale('left')}
-          className="flex items-center"
-          disabled={disabled}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Add to Left Scale
-        </ContextMenuItem>
-        <ContextMenuItem 
-          onClick={() => handleAddToScale('right')}
-          className="flex items-center"
-          disabled={disabled}
-        >
-          <ArrowRight className="mr-2 h-4 w-4" />
-          Add to Right Scale
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+          <button 
+            onClick={() => handleAddToScale('left')}
+            className="w-full text-left px-2 py-1.5 text-sm rounded-sm flex items-center hover:bg-accent focus:bg-accent"
+            disabled={disabled}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Add to Left Scale
+          </button>
+          <button 
+            onClick={() => handleAddToScale('right')}
+            className="w-full text-left px-2 py-1.5 text-sm rounded-sm flex items-center hover:bg-accent focus:bg-accent"
+            disabled={disabled}
+          >
+            <ArrowRight className="mr-2 h-4 w-4" />
+            Add to Right Scale
+          </button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 

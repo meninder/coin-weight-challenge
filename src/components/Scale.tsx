@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import Coin from './Coin';
 
 interface ScaleProps {
   leftPanCoins: number[];
@@ -12,6 +13,8 @@ interface ScaleProps {
   onWeigh: () => void;
   disabled: boolean;
   hasWeighed: boolean;
+  onLabelCoin: (id: number) => void;
+  labeledFakeCoin: number | null;
 }
 
 const Scale: React.FC<ScaleProps> = ({
@@ -22,7 +25,9 @@ const Scale: React.FC<ScaleProps> = ({
   onRemoveCoin,
   onWeigh,
   disabled,
-  hasWeighed
+  hasWeighed,
+  onLabelCoin,
+  labeledFakeCoin
 }) => {
   const [scaleState, setScaleState] = useState<'balanced' | 'left-heavy' | 'right-heavy'>('balanced');
   
@@ -44,6 +49,7 @@ const Scale: React.FC<ScaleProps> = ({
     }
   }, [hasWeighed, leftPanCoins, rightPanCoins, fakeCoinId]);
   
+  // This is kept for compatibility, but we're not using drag and drop now
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     if (disabled) return;
     e.preventDefault();
@@ -53,6 +59,17 @@ const Scale: React.FC<ScaleProps> = ({
     if (disabled) return;
     e.preventDefault();
     const coinId = parseInt(e.dataTransfer.getData('text/plain'));
+    onAddCoin(side, coinId);
+  };
+
+  const handleAddToScale = (coinId: number, side: 'left' | 'right') => {
+    // For coins already on the scale, this just moves them from one side to the other
+    if (leftPanCoins.includes(coinId)) {
+      onRemoveCoin('left', coinId);
+    }
+    if (rightPanCoins.includes(coinId)) {
+      onRemoveCoin('right', coinId);
+    }
     onAddCoin(side, coinId);
   };
   
@@ -98,15 +115,16 @@ const Scale: React.FC<ScaleProps> = ({
           >
             <div className="flex flex-wrap gap-1 p-2 justify-center">
               {leftPanCoins.map(coinId => (
-                <motion.div 
-                  key={coinId} 
-                  className="w-8 h-8 rounded-full bg-coin flex items-center justify-center cursor-pointer text-xs font-bold"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => onRemoveCoin('left', coinId)}
-                >
-                  {coinId}
-                </motion.div>
+                <Coin
+                  key={`left-${coinId}`}
+                  id={coinId}
+                  isFake={coinId === fakeCoinId}
+                  isLabeledFake={labeledFakeCoin === coinId}
+                  onDragStart={() => {}}
+                  onLabelCoin={onLabelCoin}
+                  onAddToScale={handleAddToScale}
+                  disabled={disabled}
+                />
               ))}
             </div>
           </motion.div>
@@ -126,15 +144,16 @@ const Scale: React.FC<ScaleProps> = ({
           >
             <div className="flex flex-wrap gap-1 p-2 justify-center">
               {rightPanCoins.map(coinId => (
-                <motion.div 
-                  key={coinId} 
-                  className="w-8 h-8 rounded-full bg-coin flex items-center justify-center cursor-pointer text-xs font-bold"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => onRemoveCoin('right', coinId)}
-                >
-                  {coinId}
-                </motion.div>
+                <Coin
+                  key={`right-${coinId}`}
+                  id={coinId}
+                  isFake={coinId === fakeCoinId}
+                  isLabeledFake={labeledFakeCoin === coinId}
+                  onDragStart={() => {}}
+                  onLabelCoin={onLabelCoin}
+                  onAddToScale={handleAddToScale}
+                  disabled={disabled}
+                />
               ))}
             </div>
           </motion.div>

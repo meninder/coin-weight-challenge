@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Coin from './Coin';
 import Scale from './Scale';
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { RotateCcw, Crown } from 'lucide-react';
 
@@ -38,7 +38,7 @@ const CoinWeighingGame: React.FC = () => {
     console.log(`New game: Fake coin is ${randomFakeCoin}`);
   };
   
-  // This is kept for compatibility with the Scale component
+  // This is kept for compatibility with the Coin component
   const handleDragStart = (id: number) => {
     // Do nothing for now as we're not using drag and drop
   };
@@ -205,6 +205,8 @@ const CoinWeighingGame: React.FC = () => {
             onWeigh={handleWeigh}
             disabled={gameComplete}
             hasWeighed={hasWeighed}
+            onLabelCoin={handleLabelCoin}
+            labeledFakeCoin={labeledFakeCoin}
           />
         </div>
         
